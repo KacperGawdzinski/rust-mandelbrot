@@ -89,7 +89,17 @@ impl Mandelbrot {
     }
 
     #[wasm_bindgen]
-    pub fn chuj(&self) -> i32 {
+    pub fn iterations(&self) -> i32 {
         return self.pixels.iter().map(|&pixel| pixel as u32).sum::<u32>() as i32;
+    }
+
+    #[wasm_bindgen]
+    pub fn x_point_0_0(&self, scale: f64, center_x: f64) -> f64 {
+        return (0 as f64 - self.width as f64 / 2.0) / scale + center_x;
+    }
+
+    #[wasm_bindgen]
+    pub fn y_point_0_0(&self, scale: f64, center_y: f64) -> f64 {
+        return (0 as f64 - self.width as f64 / 2.0) / scale + center_y;
     }
 }
