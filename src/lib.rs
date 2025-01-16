@@ -1,6 +1,4 @@
-use crate::complex::Complex;
 use wasm_bindgen::prelude::*;
-mod complex;
 
 #[wasm_bindgen]
 pub struct Mandelbrot {
@@ -28,22 +26,17 @@ impl Mandelbrot {
             for x in 0..self.width {
                 let cx = (x as f64 - self.width as f64 / 2.0) / scale + center_x;
                 let cy = (y as f64 - self.height as f64 / 2.0) / scale + center_y;
-                let mut z = Complex::zero();
-                let mut c = Complex { r: cx, i: cy };
-                let mut z2 = Complex::zero();
+
+                let mut z_real = 0.0;
+                let mut z_imag = 0.0;
                 let mut iterations = 0;
 
-                // while (z2.r + z2.i <= 4.0) && iterations < self.max_iter {
-                //     z.i = (z.r + z.r) * z.i + cy;
-                //     z.r = z2.r - z2.i + cx;
-                //     z2.r = z.r * z.r;
-                //     z2.i = z.i * z.i;
+                while (z_real * z_real + z_imag * z_imag) < 4.0 && iterations < self.max_iter {
+                    let temp_real = z_real * z_real - z_imag * z_imag + cx;
+                    let temp_imag = 2.0 * z_real * z_imag + cy;
 
-                //     iterations += 1;
-                // }
-
-                while z.length_no_sqrt() < 4.0 && iterations < self.max_iter {
-                    z = (z * z) + c;
+                    z_real = temp_real;
+                    z_imag = temp_imag;
 
                     iterations += 1;
                 }

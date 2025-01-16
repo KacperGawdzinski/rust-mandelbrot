@@ -18,31 +18,32 @@ const render = async () => {
     let scale = 200.0;
     // let centerX = 0.0;
     // let centerY = 1.0;
-    // let centerX = -2;
-    // let centerY = 0.0;
-    let centerX = 0.0;
+    let centerX = -2;
     let centerY = 0.0;
+    // let centerX = 0.0;
+    // let centerY = 0.0;
 
     const maxIter = 255;
-    let pixels = null;
 
     const mandelbrot = new Mandelbrot(width, height, maxIter);
+    const pixelsPtr = mandelbrot.pixels();
+
+    performance.mark('Allocating memory');
+    const pixels = new Uint8Array(memory.buffer, pixelsPtr, width * height);
+    performance.mark('Memory allocated');
+    const allocatingMemoryTime = performance.measure('Allocating memory', 'Allocating memory', 'Memory allocated');
+    console.log("Allocating memory", allocatingMemoryTime.duration);
 
     const animate = () => {
         stats.begin();
 
-        console.log("Iteracje: ", mandelbrot.iterations())
+        console.log("Iterations: ", mandelbrot.iterations())
 
         performance.mark('Generating mandelbrot');
         mandelbrot.generate(scale, centerX, centerY);
-        console.log("[0,0] point value: ", mandelbrot.x_point_0_0(scale, centerX), mandelbrot.y_point_0_0(scale, centerY))
         performance.mark('Mandelbrot generated');
 
-        const pixelsPtr = mandelbrot.pixels();
-
-        performance.mark('Allocating memory');
-        pixels = new Uint8Array(memory.buffer, pixelsPtr, width * height);
-        performance.mark('Memory allocated');
+        console.log("[0,0] point value: ", mandelbrot.x_point_0_0(scale, centerX), mandelbrot.y_point_0_0(scale, centerY));
 
         performance.mark('Creating image data');
         const imageData = ctx.createImageData(width, height);
@@ -62,15 +63,11 @@ const render = async () => {
 
         scale *= 1.02;
 
-        pixels = null;
-
         const mandelbrotGenerationTime = performance.measure('Generating mandelbrot', 'Generating mandelbrot', 'Mandelbrot generated');
-        const allocatingMemoryTime = performance.measure('Allocating memory', 'Allocating memory', 'Memory allocated');
         const creatingImageDataTime = performance.measure('Creating image data', 'Creating image data', 'Image data created');
         const drawingTime = performance.measure('Drawing', 'Drawing', 'Drawed');
 
         console.log("Generating mandelbrot", mandelbrotGenerationTime.duration);
-        console.log("Allocating memory", allocatingMemoryTime.duration);
         console.log("Creating image data", creatingImageDataTime.duration);
         console.log("Drawing", drawingTime.duration);
         console.log("\n")
